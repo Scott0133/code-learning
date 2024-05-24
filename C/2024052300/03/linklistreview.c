@@ -46,8 +46,6 @@ void Insert(int x)
         }
         q->next = p;
     }
-
-
 }
 
 void Print()
