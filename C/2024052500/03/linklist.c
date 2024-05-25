@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #define TRUE 0;
 #define FALSE 1;
-#define ERROR 2;
+#define ERROR -1;
 typedef int ElemType;
 typedef struct LNode {
     ElemType data;
@@ -17,7 +17,7 @@ int Delete(LinkList *L, int i, ElemType *e);    //在第i个位置删除结点e�
 LNode *LocateElem(LinkList L,ElemType e);       //按值查找，找到数据域==e的结点，return结构指针的地址
 int GetLength(LinkList L);                      //返回链表长度
 void Print();                                   //顺序打印链表
-int ReturnData();
+int ReturnData_Pos(LinkList L, int x);          //返回链表元素位置，
 //-----------------------------------------------------------------------------------
 
 int main()
@@ -29,9 +29,11 @@ int main()
     Insert(&L,2,11);
     Insert(&L,3,12);
     Insert(&L,4,13);
-    Delete(&L,2,&e);
+    Insert(&L,5,14);
+    //Delete(&L,2,&e);
     printf("now deleted element is %d\n", e);
     Print(L);
+    printf("\npos is %d" ,ReturnData_Pos(L, 2));
 }
 
 int Insert(LinkList *L, int i, ElemType e)
@@ -117,4 +119,17 @@ void Print(LinkList L)
         printf("%d ", temp->data);
         temp = temp->next;
     }
+}
+int ReturnData_Pos(LinkList L, int x)
+{
+    int i = 1;
+    LNode *p = L->next;
+    while (p->data != x)
+    {
+        p = p->next;
+        i++;
+        if(p->next == NULL)
+            return ERROR;
+    }
+    return i;
 }
