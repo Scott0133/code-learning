@@ -14,10 +14,10 @@ int Insert(LinkList *L, int i, ElemType e);     //在第i个位置插入结点e�
 int InitLinklist(LinkList *L);                  //初始化链表
 int Empty(LinkList L);                          //判断链表是否为空
 int Delete(LinkList *L, int i, ElemType *e);    //在第i个位置删除结点e，并传回e的值
-LNode *LocateElem(LinkList L,ElemType e);       //按值查找，找到数据域==e的结点，return结构指针的地址
+LNode *LocateElem(LinkList L,ElemType e);       //按值查找，找到数据域==e的结点，return结构体指针的地址
 int GetLength(LinkList L);                      //返回链表长度
 void Print();                                   //顺序打印链表
-int ReturnData_Pos(LinkList L, int x);          //返回链表元素位置，
+int ReturnData_Pos(LinkList L, int x);          //返回链表元素位置，未找到则返回-1
 //-----------------------------------------------------------------------------------
 
 int main()
