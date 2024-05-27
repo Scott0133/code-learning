@@ -1,10 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 #define MAXSIZE 100
-#define OK 10;
-#define TRUE 1;
-#define FALSE 2;
-#define ERROR 3;
+#define OK 10
+#define TRUE 1
+#define FALSE 2
+#define ERROR 3
 
 struct SqStack {
     int *base;
