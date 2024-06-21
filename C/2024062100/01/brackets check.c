@@ -1,10 +1,11 @@
 //brackets check
-//顺序栈
+//顺序栈v2
 #define MaxSize 10
 #define TRUE 1
 #define FALSE 2
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 typedef struct {
     char data[MaxSize];
@@ -19,8 +20,9 @@ int bracketCheck(char str[], int length);
 
 int main()
 {
-    char str1[] = "()";
-    bracketCheck(str1, 2);
+    char str1[] = "()[]";
+    int length = strlen(str1);
+    bracketCheck(str1, length);
     
 }
 
