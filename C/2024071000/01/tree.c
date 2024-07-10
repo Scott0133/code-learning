@@ -72,6 +72,7 @@ int treeDepth(BiTree T)
     }
 }
 
+//顺序二叉树的结点插入
 // void newnode(BiTree *T, int x)
 // {
 //     BiTNode * p = (BiTNode*)malloc(sizeof(BiTNode));    //为新结点分配空间
@@ -87,3 +88,5 @@ int treeDepth(BiTree T)
 //         (*root)->rchild = p;
 //     }
 // }
+
+//链式二叉树的结点插入
