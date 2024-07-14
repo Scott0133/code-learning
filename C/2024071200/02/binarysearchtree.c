@@ -55,7 +55,7 @@ BstNode* Insert(BstNode* root, int data)
         root->right = Insert(root->right, data);
     return root;
 }
-
+//形式二
 void Insert_2(BstNode** rootP, int data)
 {
     if (*rootP == NULL)
