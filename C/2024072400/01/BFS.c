@@ -1,6 +1,6 @@
 //邻接矩阵法创建图
 //图的广度优先遍历(Breadth-First-Search, BFS)
-//trash bug
+//fixbug
 #include<stdio.h>
 #include<stdlib.h>
 #define TRUE 1
@@ -117,54 +117,29 @@ void InitGraph(MGraph *G)
     G->vexnum = G->arcnum = 0;          //初始化顶点数、边数
 }
 
-int FirstNeighbor(MGraph G, int x)      //求图G中顶点x的第一个邻接点，若有则返回顶点号；若x没有邻接点或不存在x，则返回-1       BUG
+int FirstNeighbor(MGraph G, int x)      //求图G中顶点x的第一个邻接点，若有则返回顶点号；若x没有邻接点或不存在x，则返回-1
 {
-    int i;
-    if (x > G.vexnum)                   //x不存在
+    for (int i=1; i<G.vexnum+1; i++)
     {
-        return -1;
-    }
-    for (i=1; i<G.vexnum; i++)          //数组下标起始为1
-    {
-        if (G.Edge[x][i] == TRUE)       //找到了x的邻接点
+        if (G.Edge[x][i] == TRUE)
         {
             return G.Vex[i];
         }
-        else if(i > G.vexnum)         //x没有邻接点
-        {
-            return -1;
-        }
     }
+    return -1;
 }
 int NextNeighbor(MGraph G, int x, int y)//假设图G中顶点y是顶点x的一个邻接点，返回除y之外顶点x的下一个邻接点的顶点号，若y是x的最后一个邻接点（未找到下一邻接点），则返回-1
 {
-    int flag = FALSE;
-    int i;
-    for (i=1; i<G.vexnum; i++)          //数组下标起始为1
+    for (int i=y+1; i<G.vexnum+1; i++)
     {
-        if (G.Edge[x][i] == TRUE)       //找到了x的邻接点
+        if (G.Edge[x][i] == TRUE)
         {
-            flag = TRUE;
-            y = i;
-            break;
+            return G.Vex[i];
         }
     }
-    if (flag == TRUE)
-    {
-        for (y+1; y+1<G.vexnum; y++)        //找下一个邻接点
-        {
-            if (G.Edge[x][y+1] == TRUE)   //若找到下一邻接点，返回顶点位置
-            {
-                return G.Vex[y+1];
-            }
-            else if (y+1 > G.vexnum)      //若未找到下一邻接点
-            {
-                return -1;
-            }
-        }
-    }
+    return -1;
 }
-void BFSTraverse(MGraph G)      //BUG
+void BFSTraverse(MGraph G)
 {
     int i;
     for (i=0; i<G.vexnum; ++i)          //从0号顶点开始遍历
@@ -195,7 +170,6 @@ void BFS(MGraph G, int v)
                 Visit(G, w);
                 visited[w] = TRUE;
                 EnterQueue(&Q, w);
-                ret = NextNeighbor(G, v, w);
             }
         }
     }
