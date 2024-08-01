@@ -4,7 +4,7 @@
 
 #include<stdio.h>
 #include<stdlib.h>
-#define INITSIZE 10 // 初始大小为10
+#define INITSIZE 20 // 初始大小为20
 #define TRUE 1
 #define FALSE -1
 
@@ -17,7 +17,7 @@ typedef struct { // 定义顺序表
 void InitList(SqList *L); // 初始化顺序表
 void IncreaseSize(SqList *L, int len); // 增加动态数组的长度
 void Insert(SqList *L, int i, int e); // 在顺序表i处插入元素e
-void SetNum(SqList *L, int x, int y); // 在顺序表下标x设置数据y
+void SetNum(SqList *L, int arr[], int length); // 在顺序表下标x设置数据y
 void Print(SqList L);
 int Seqrch_Seq(SqList L, int key);
 
@@ -25,19 +25,10 @@ int main()
 {
     SqList L; // 定义顺序表
     InitList(&L); // 初始化顺序表
-    // 初始化顺序表
-    SetNum(&L, 0, 33); //顺序表下标从0开始 
-    SetNum(&L, 1, 10);
-    SetNum(&L, 2, 13);
-    SetNum(&L, 3, 29);
-    SetNum(&L, 4, 16);
-    SetNum(&L, 5, 19);
-    SetNum(&L, 6, 32);
-    SetNum(&L, 7, 7);
-    SetNum(&L, 8, 43);
-    SetNum(&L, 9, 41);
-    SetNum(&L, 10, 37);
-    int ret = Seqrch_Seq(L, 37);
+    int arr[] = {33, 10, 13, 29, 16, 19, 32, 7, 43, 41, 37}; // 将写入的顺序表元素
+    int length = sizeof(arr) / sizeof(arr[0]); // 计算元素个数
+    SetNum(&L, arr, length); // 设置顺序表元素
+    int ret = Seqrch_Seq(L, 37); // 顺序查找
     printf("%d", ret);
     //IncreaseSize(&L, 5);
     //printf("%d, %d, %d, %d", L.data[0],L.data[1],L.data[2],L.data[3]);
@@ -77,10 +68,15 @@ void Print(SqList L)
         L.length--;
     }
 }
-void SetNum(SqList *L, int x, int y)
+void SetNum(SqList *L, int arr[], int length)
 {
-    L->data[x] = y;
-    L->length++;
+    int i = 0;
+    while (i<length)
+    {
+        L->data[i] = arr[i];
+        i++;
+    }
+    L->length = length;
 }
 int Seqrch_Seq(SqList L, int key) // 顺序查找
 {
