@@ -12,15 +12,12 @@
 // 思路：将数组映射为[顺序二叉树]，检查所有非终端结点，是否满足小根堆要求，若不满足要求则调整
 // 顺序存储的完全二叉树中，非终端节点编号i<=n/2
 #include<stdio.h>
-#define INF 999 // 定义上限
+#define INF 999 // 定义空
 
 void swap(int *a, int *b);
-// void BuildMaxHeap(int A[], int len); // 建立大根堆
-void BuildMinHeap(int A[], int len);
-// void HeadAdjust(int A[], int k, int len); // 调整结点位置（以k为根的子树调整为大根堆）
-void HeadAdjust_v2(int A[], int k, int len);
-// void HeapSort(int A[], int k, int len); // 堆排序主流程
-void HeapSort_v2(int A[], int k, int len);
+void BuildMinHeap(int A[], int len); // 建立小根堆
+void HeadAdjust_v2(int A[], int k, int len); // 调整结点位置（以k为根的子树调整为小根堆）
+void HeapSort_v2(int A[], int k, int len); // 堆排序主流程
 void Print(int A[], int len);
 void Insert(int A[], int n, int *len); // 在小根堆中插入新元素n，用指针返回len
 void Delete(int A[], int x, int *len); // 在小根堆中删除x元素位置，用指针返回len
@@ -30,28 +27,24 @@ int main()
     int A[20] = {0, 53, 17, 78, 9, 45, 65, 87, 32}; // A[0]保留作为暂存
     int n = sizeof(A) / sizeof(A[0]) - 1; // len=实际数组长度-1
     int len = 8; // 未调用函数所以直接写值了
-    // HeapSort(A, 1, len); // （基于大根堆的堆排序得到递增序列）
-    // HeapSort_v2(A, 1, len); // 基于小根堆排序
+    // HeapSort_v2(A, 1, len); // 基于小根堆排序（得到递减序列）
     BuildMinHeap(A, len); // 建立小根堆
-    Insert(A, 13, &len); // 在小根堆中插入10
-    Insert(A, 46, &len);
-    Delete(A, 2, &len);
-    Delete(A, 3, &len);
+    Insert(A, 13, &len); // 在小根堆中插入元素13
+    Insert(A, 46, &len); // 插入元素46
+    Delete(A, 2, &len); // 删除数组下标2的元素
+    Delete(A, 3, &len); // 删除数组下标3的元素
     Print(A, n);
     //printf("len is %d ", len);
-
     return 0;
 }
 
-void swap(int *a, int *b)
+void swap(int *a, int *b) // 交换数组元素
 {
     int temp = 0;
     temp = *b;
     *b = *a;
     *a = temp;
 }
-
-
 // 建立小根堆
 void BuildMinHeap(int A[], int len)
 {
@@ -59,8 +52,6 @@ void BuildMinHeap(int A[], int len)
         HeadAdjust_v2(A, i, len); // 将每个结点调整为小根堆
     }
 }
-
-
 void HeadAdjust_v2(int A[], int k, int len) // 以k为根的子树[调整]小根堆
 {
     A[0] = A[k]; // A[0]暂存将要调整的结点
@@ -76,15 +67,6 @@ void HeadAdjust_v2(int A[], int k, int len) // 以k为根的子树[调整]小根
     }
     A[k] = A[0]; // 被筛选结点放入最终位置
 }
-
-// // 基于大根堆进行排序（基于大根堆排序得到递增序列）
-// void HeapSort(int A[], int k, int len) {
-//     BuildMaxHeap(A, len); // 初始建堆
-//     for (int i=len; i>1; i--) { // n-1趟的交换和建堆过程（i指向待排序元素序列中的最后一个，每趟处理后i前移）
-//         swap(&A[i], &A[1]); // 堆顶元素和堆底元素交换
-//         HeadAdjust(A, 1, i-1); // 把剩余的待排序元素整理成堆（第i个元素已有序，故传入元素为i-1）
-//     }
-// }
 void HeapSort_v2(int A[], int k, int len) // 基于小根堆进行排序（基于小根堆排序得到递减序列）
 {
     BuildMinHeap(A, len); // 建立小根堆
@@ -93,14 +75,12 @@ void HeapSort_v2(int A[], int k, int len) // 基于小根堆进行排序（基�
         HeadAdjust_v2(A, 1, i-1); // 将剩余元素排序整理为小根堆
     }
 }
-
 void Print(int A[], int len)
 {
     for (int i=1; i<=len; i++) {
         printf("%d ", A[i]);
     }
 }
-
 // 基于小根堆的元素插入删除
 void Insert(int A[], int n, int *len)
 {
@@ -113,13 +93,13 @@ void Insert(int A[], int n, int *len)
         i = p; // 将i设置为父节点
         p = i/2; // 下一个父节点
     }
-    *len = *len + 1;
+    *len = *len + 1; // 数组长度加1
 }
 void Delete(int A[], int x, int *len)
 {
     A[x] = INF; //A[x]的元素被删除
     A[x] = A[*len]; // 用堆底元素代替删除元素
     A[*len] = INF; // 堆底元素置空
-    *len = *len - 1;
+    *len = *len - 1; // 数组长度减1
     BuildMinHeap(A, *len); // 用下坠法保持小根堆特性
 }
