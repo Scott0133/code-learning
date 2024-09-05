@@ -19,6 +19,7 @@ BTNode *NewNode(ElemType x, BTNode *ln, BTNode *rn); // 创建一个新结点，
 int IsEmpty(); // 若二叉树bt为空，则返回TRUE，否则返回FALSE
 int Root(BinaryTree *bt, ElemType *x); // 若二叉树bt非空，则用x返回其根结点的值，并返回TRUE，否则返回FALSE
 void MakeTree(BinaryTree *bt, ElemType e, BinaryTree *left, BinaryTree *right); // 构造一棵二叉树bt，根结点值为x，以left和right为该根结点的左右子树
+void Visit(BinaryTree *bt); // 访问当前结点
 
 int main()
 {
@@ -32,7 +33,7 @@ int main()
     MakeTree(&z, 'F', &a, &b);
     MakeTree(&x, 'C', &y, &z);
     MakeTree(&y, 'D', &a, &b);
-    MakeTree(&z, 'B', &y, &x);
+    MakeTree(&z, 'B', &y, &x); // 现在x为0x00
 }
 
 void Create(BinaryTree *bt)
@@ -63,4 +64,9 @@ void MakeTree(BinaryTree *bt, ElemType e, BinaryTree *left, BinaryTree *right)
     }
     bt->root = NewNode(e, left->root, right->root);
     left->root = right->root = NULL;
+    Visit(bt);
+}
+void Visit(BinaryTree *bt)
+{
+    printf("%c, ", bt->root->element);
 }
