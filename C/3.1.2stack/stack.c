@@ -62,7 +62,7 @@ int IsFull(Stack *S)
 {
     return S->top == S->maxSize - 1;
 }
-int Top(Stack *S, Elemtype *x)
+int Top(Stack *S, Elemtype *x) // 获取栈顶元素，通过x返回。返回栈顶元素
 {
     if (IsEmpty(S)) {
         return FALSE;
