@@ -33,7 +33,7 @@ int main()
     int mSize = 100;
     PriorityQueue PQ;
 
-    CreatePQ(&PQ, mSize);
+    CreatePQ(&PQ, mSize); 
     Append(&PQ, 71); // 插入元素形成小根堆
     Append(&PQ, 74);
     Append(&PQ, 2);
