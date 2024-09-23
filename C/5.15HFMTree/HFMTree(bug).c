@@ -1,3 +1,4 @@
+// 哈夫曼树（BUG）
 #include<stdio.h>
 #include<stdlib.h>
 #define TRUE 1
