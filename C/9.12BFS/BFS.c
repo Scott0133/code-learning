@@ -70,7 +70,7 @@ int main()
     Insert(&lg, 5, 6, Connect); Insert(&lg, 5, 3, Connect); Insert(&lg, 5, 2, Connect); Insert(&lg, 5, 1, Connect);
     Insert(&lg, 6, 7, Connect); Insert(&lg, 6, 5, Connect); Insert(&lg, 6, 4, Connect); Insert(&lg, 6, 2, Connect);
     Insert(&lg, 7, 6, Connect); Insert(&lg, 7, 4, Connect);
-    // 例图
+    // 例图（数组下标为1开始）
     LGraph lg_2; // 创建例图
     Init_lg_2(&lg_2, 8);
     Insert_lg_2(&lg_2, 1, 5, Connect); Insert_lg_2(&lg_2, 1, 2, Connect);
