@@ -1,4 +1,5 @@
 //最小生成树————Prim算法
+// 以顶点2为中心的网
 #include <stdio.h>
 #include <stdbool.h>
 
