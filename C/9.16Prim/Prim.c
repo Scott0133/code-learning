@@ -49,7 +49,7 @@ int main()
     // Remove(&lg, 3, 0);
     // Print(lg);
 
-    // 图0.17 (a)带权连通图G(无向图)
+    // 图9.17 (a)带权连通图G(无向图)
     LGraph lg;
     int closeVex[10]; // 声明closeVex[]
     int lowWeight[10]; // 声明lowWeight[]
