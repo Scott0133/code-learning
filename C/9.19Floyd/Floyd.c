@@ -1,8 +1,8 @@
-// Dijkstra算法求单源最短路径
-// 辅助数据结构如下：
-    // 一维数组final[]记录源点v0到顶点i的最短路径是否已经确定
-    // 一维数组dist[]记录从源点v0到顶点i的当前最短路径长度
-    // 一维数组path[]记录从源点v0到顶点i的当前最短路径上的顶点i的直接前驱顶点的序号        
+// Floyd算法实现所有顶点之间的最短路径
+// 辅助数据结构：
+    // 一维数组d[]，表示顶点之间的最短路径
+    // 一维数组p[]，表示最短路径顶点的直接前驱
+
 // 图的邻接矩阵法实现
 // 包含顶点数、边数、权值、无边值
 #include<stdio.h>
@@ -27,30 +27,24 @@ int Exist(MGraph *mg, int u, int v); // 搜索边是否存在
 int Insert(MGraph *mg, int u, int v, ElemType w); // 插入边
 int Remove(MGraph *mg, int u, int v); // 删除边
 void Print(MGraph mg); // 打印图
-int Choose(int *dist, int *final, int n); // 选出最小的dist[i]
-int Dijkstra(int v, ElemType *dist, int *path, MGraph mg);
+
+void Floyd(MGraph mg); // Floyd算法
 
 int main()
 {
-    // 测试图9.19(a)带权有向图G
+    // 测试图9.22(a)带权有向图G
     MGraph mg;
-    InitGraph(&mg, 6, INFTY);
-    Insert(&mg, 0, 1, 50);
-    Insert(&mg, 0, 4, 80);
-    Insert(&mg, 0, 2, 10);
-    Insert(&mg, 1, 4, 20);
-    Insert(&mg, 1, 2, 15);
-    Insert(&mg, 2, 3, 15);
-    Insert(&mg, 3, 1, 20);
-    Insert(&mg, 3, 4, 45);
-    Insert(&mg, 5, 4, 10);
-    Insert(&mg, 5, 3, 9);
-    // 辅助数据结构
-    ElemType dist[10]; // 一维数组dist[]记录从源点v0到顶点i的当前最短路径长度
-    int path[10]; // 一维数组path[]记录从源点v0到顶点i的当前最短路径上的顶点i的直接前驱顶点的序号  
+    InitGraph(&mg, 4, INFTY);
+    Insert(&mg, 0, 1, 1);
+    Insert(&mg, 0, 3, 4);
+    Insert(&mg, 1, 3, 2);
+    Insert(&mg, 1, 2, 9);
+    Insert(&mg, 2, 0, 3);
+    Insert(&mg, 2, 3, 8);
+    Insert(&mg, 2, 1, 5);
+    Insert(&mg, 3, 2, 6);
     // Print(mg);
-    Dijkstra(0, dist, path, mg);
-
+    Floyd(mg);
     return 0;
 }
 
@@ -114,71 +108,60 @@ int Remove(MGraph *mg, int u, int v) // 参数为图指针，横坐标下标，�
 void Print(MGraph mg)
 {
     for (int i=0; i<mg.n; i++) {
+        printf("\n");
         for (int j=0; j<mg.n; j++) {
             if (mg.a[i][j] == INFTY) {
                 printf("∞ "); continue;
             }
             printf("%d ", mg.a[i][j]);
         }
-        printf("\n");
     }
 }
-int Choose(int *dist, int *final, int n)
+void Floyd(MGraph mg)
 {
-    int i, minpos;
-    ElemType min;
-    min = INFTY; // 定义最小值为极大，便于与任意有效值交换
-    minpos = -1; // 初始化minpos为-1，便于与任意有效下标交换
-    for (i=0; i<n; i++) {
-        if (dist[i]<min && !final[i]) { // 选出最小值和下标
-            min = dist[i];
-            minpos = i;
+    int i, j, k;
+    ElemType **d = (ElemType **)malloc(mg.n*sizeof(ElemType *)); // 为二维数组d分配存储空间
+    int **p = (int **)malloc(mg.n*sizeof(int *)); // 为二维数组p分配存储空间
+    for (i=0; i<mg.n; i++) {
+        d[i] = (ElemType *)malloc(mg.n*sizeof(ElemType));
+        p[i] = (int *)malloc(mg.n*sizeof(int));
+        for (j=0; j<mg.n; j++) {
+            d[i][j] = mg.noEdge;
+            p[i][j] = 0;
         }
     }
-    return minpos; // 返回下标位置
-}
-int Dijkstra(int v, ElemType *dist, int *path, MGraph mg)
-{
-    int i, k, w;
-    int *final; // 定义final[]
-    if (v<0 || v>mg.n-1) {
-        return ERROR;
-    }
-    final = (int *)malloc(mg.n*sizeof(int));
-    for (i=0; i<mg.n; i++) { // 初始化final[]，dist[]，path[]
-        final[i] = 0;
-        dist[i] = mg.a[v][i];
-        if (i!=v && dist[i]<INFTY) {
-            path[i] = v;
-        } else {
-            path[i] = -1;
-        }
-    }
-    final[v] = 1; // 顶点v为源点
-    dist[v] = 0;
-    for (i=1; i<mg.n-1; i++) { // 处理其余n-1个顶点
-        k = Choose(dist, final, mg.n);
-        if (k == -1) continue;
-        final[k] = 1; // k加入final
-        // printf("%d ", k);
-        for (w=0; w<mg.n; w++) { // 更新dist和path
-            if (!final[w] && dist[k]+mg.a[k][w]<dist[w]) {
-                dist[w] = dist[k] + mg.a[k][w];
-                path[w] = k;
+    for (i=0; i<mg.n; i++) {
+        for (j=0; j<mg.n; j++) { // 初始化d和p
+            d[i][j] = mg.a[i][j];
+            if (i!=j && mg.a[i][j]<INFTY) {
+                p[i][j] = i;
+            } else {
+                p[i][j] = -1;
             }
         }
     }
-    printf("path[v]:");
-    for (i=0; i<mg.n; i++) {
-        printf("%d ", path[i]);
-    }
-    printf("\ndist[v]:");
-    for (i=0; i<mg.n; i++) {
-        if (dist[i] == INFTY) {
-            printf("∞ ");
-        } else {
-            printf("%d ", dist[i]);
+    for (k=0; k<mg.n; k++) { // Floyd算法
+        for (i=0; i<mg.n; i++) {
+            for (j=0; j<mg.n; j++) {
+                if (d[i][k]+d[k][j] < d[i][j]) { // 更新d和p
+                    d[i][j] = d[i][k]+d[k][j];
+                    p[i][j] = p[k][j];
+                }
+            }
         }
     }
-    return OK;
+    printf("d[][]:\n");
+    for (i=0; i<mg.n; i++) {
+        for (j=0; j<mg.n; j++) {
+            printf("%d ", d[i][j]);
+        }
+        printf("\n");
+    }
+    printf("p[][]:\n");
+    for (i=0; i<mg.n; i++) {
+        for (j=0; j<mg.n; j++) {
+            printf("%d ", p[i][j]);
+    }
+    printf("\n");
+}
 }
