@@ -44,6 +44,7 @@ int main()
     list->n = 8;
     StartQuickSort(list);
     Print(*list);
+    free(list);
     
     return 0;
 }
