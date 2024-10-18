@@ -1,4 +1,4 @@
-// 二叉树的抽象数据类型定义
+// 程序5.1 二叉树的抽象数据类型定义
 #include<stdio.h>
 #include<stdlib.h>
 #define TRUE 1
@@ -7,7 +7,7 @@ typedef char ElemType;
 typedef struct btnode { // 定义二叉树结点结构体
     ElemType element;
     struct btnode *lChild;
-    struct btnode *rChile;
+    struct btnode *rChild;
 } BTNode;
 typedef struct binarytree { // 定义二叉树结构体
     BTNode *root;
@@ -33,7 +33,7 @@ int main()
     MakeTree(&z, 'F', &a, &b);
     MakeTree(&x, 'C', &y, &z);
     MakeTree(&y, 'D', &a, &b);
-    MakeTree(&z, 'B', &y, &x); // 现在x为0x00
+    MakeTree(&z, 'B', &y, &x);
 }
 
 void Create(BinaryTree *bt)
@@ -45,7 +45,7 @@ BTNode *NewNode(ElemType x, BTNode *ln, BTNode *rn)
     BTNode *p = (BTNode *)malloc(sizeof(BTNode));
     p->element = x;
     p->lChild = ln;
-    p->rChile = rn;
+    p->rChild = rn;
     return p;
 }
 int Root(BinaryTree *bt, ElemType *x)

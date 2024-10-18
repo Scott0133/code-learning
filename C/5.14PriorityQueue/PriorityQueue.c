@@ -1,4 +1,4 @@
-// 优先权队列的实现
+// 程序5.13 优先权队列的实现
 #include<stdio.h>
 #include<stdlib.h>
 #define TRUE 1
@@ -9,23 +9,23 @@
 #define Duplicate 5 // 元素重复
 
 typedef int BOOL;
-typedef int ElemType;
+typedef int ElemType_PQ;
 
 typedef struct priorityQueue { // 优先权队列结构体
-    ElemType *elements; // 存储元素的数组
+    ElemType_PQ *elements_PQ; // 存储元素的数组
     int n; // 优先权队列中元素的数量
     int maxSize; // 优先权队列的容量
 }PriorityQueue;
 
-void AdjustUp(ElemType heap[], int current);
-void AdjustDown(ElemType heap[], int current, int border);
+void AdjustUp(ElemType_PQ heap[], int current);
+void AdjustDown(ElemType_PQ heap[], int current, int border);
 void CreatePQ(PriorityQueue *PQ, int mSize);
 void Destroy(PriorityQueue *PQ);
 BOOL IsEmpty(PriorityQueue *PQ);
 BOOL IsFull(PriorityQueue *PQ);
 int Size(PriorityQueue *PQ);
-void Append(PriorityQueue *PQ, ElemType x);
-void Serve(PriorityQueue *PQ, ElemType *x);
+void Append(PriorityQueue *PQ, ElemType_PQ x);
+void Serve(PriorityQueue *PQ, ElemType_PQ *x);
 void PrintArr(PriorityQueue *PQ);
 
 int main()
@@ -54,26 +54,26 @@ int main()
 }
 
 
-void AdjustUp(ElemType heap[], int current)
+void AdjustUp(ElemType_PQ heap[], int current)
 {
     int p = current;
-    ElemType temp;
+    ElemType_PQ temp;
     while (p > 0) {
-        if (heap[p] < heap [(p-1) / 2]) { // 若p指向元素小于其双亲结点，则与双亲结点交换
+        if (heap[p] < heap[(p-1)/2]) { // 若p指向元素小于其双亲结点，则与双亲结点交换
             temp = heap[p];
-            heap[p] = heap[(p-1) / 2];
-            heap[(p-1) / 2] = temp;
+            heap[p] = heap[(p-1)/2];
+            heap[(p-1)/2] = temp;
             p = (p-1) / 2; // 将p向上移动至当前考察元素的双亲结点位置
         } else { // 若p指向的元素不小于其双亲结点，则调整完毕
             break;
         }
     }
 }
-void AdjustDown(ElemType heap[], int current, int border)
+void AdjustDown(ElemType_PQ heap[], int current, int border)
 {
     int p = current;
     int minChild;
-    ElemType temp;
+    ElemType_PQ temp;
     while (2*p+1 <= border) { // 若p不是叶子结点则调整
         if ((2*p+2 <= border) && (heap[2*p+1] > heap[2*p+2])) {
             minChild = 2*p+2; // 右孩子存在，且较大，则minChild指向p的右孩子
@@ -94,11 +94,11 @@ void CreatePQ(PriorityQueue *PQ, int mSize) // 创建一个空的优先权队列
 {
     PQ->maxSize = mSize;
     PQ->n = 0;
-    PQ->elements = (ElemType *)malloc(mSize*sizeof(ElemType));
+    PQ->elements_PQ = (ElemType_PQ *)malloc(mSize*sizeof(ElemType_PQ));
 }
 void Destroy(PriorityQueue *PQ) // 销毁一个优先权队列，释放其占用的内存空间
 {
-    free(PQ->elements);
+    free(PQ->elements_PQ);
     PQ->n = 0;
     PQ->maxSize = 0;
 }
@@ -122,26 +122,28 @@ int Size(PriorityQueue *PQ) // 获取当前优先权队列中元素的数量
 {
     return PQ->n;
 }
-void Append(PriorityQueue *PQ, ElemType x) // 在优先权队列中增加一个新元素x
+void Append(PriorityQueue *PQ, ElemType_PQ x) // 在优先权队列中增加一个新元素x
 {
-    if (IsFull(PQ)) return;
-    PQ->elements[PQ->n] = x;
+    if (IsFull(PQ)) {
+        return;
+    }
+    PQ->elements_PQ[PQ->n] = x;
     PQ->n++;
-    AdjustUp(PQ->elements, PQ->n-1);
+    AdjustUp(PQ->elements_PQ, PQ->n-1);
 }
-void Serve(PriorityQueue *PQ, ElemType *x) // 取出优先级最高的元素，利用参数x返回，并在优先权队列中删除该元素
+void Serve(PriorityQueue *PQ, ElemType_PQ *x) // 取出优先级最高的元素，利用参数x返回，并在优先权队列中删除该元素
 {
     if (IsEmpty(PQ)) {
         return;
     }
-    *x = PQ->elements[0];
+    *x = PQ->elements_PQ[0];
     PQ->n--;
-    PQ->elements[0] = PQ->elements[PQ->n];
-    AdjustDown(PQ->elements, 0, PQ->n-1);
+    PQ->elements_PQ[0] = PQ->elements_PQ[PQ->n];
+    AdjustDown(PQ->elements_PQ, 0, PQ->n-1);
 }
 void PrintArr(PriorityQueue *PQ)
 {
     for (int i=0; i<PQ->n; i++) {
-        printf("%d ", PQ->elements[i]);
+        printf("%d ", PQ->elements_PQ[i]);
     }
 }
