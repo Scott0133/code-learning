@@ -64,7 +64,7 @@ void MakeTree(BinaryTree *bt, ElemType e, BinaryTree *left, BinaryTree *right)
     }
     bt->root = NewNode(e, left->root, right->root);
     left->root = right->root = NULL;
-    Visit(bt);
+    // Visit(bt);
 }
 void Visit(BinaryTree *bt)
 {
