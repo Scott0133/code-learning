@@ -1,3 +1,5 @@
+// 求指定层次的叶子结点个数
+
 // 程序5.6 层次遍历（层序遍历）
     // 辅助数据结构：循环队列
     // 辅助数据结构：二叉树的抽象数据类型定义
@@ -26,6 +28,7 @@ typedef struct binarytree { // 定义二叉树结构体
 typedef struct queue {
     int front;
     int rear;
+    int length;
     int maxSize; // 队列实际容量为maxSize-1
     BTNode *element; // 存储的一维数组为ElemType类型
 } Queue;
@@ -39,6 +42,7 @@ int EnQueue(Queue *Q, BTNode x); // 在队列Q的队尾插入元素x（入队）
 int DeQueue(Queue *Q); // 从队列Q中删除队头元素（出队）。操作成功返回TRUE，否则返回FALSE
 void Clear(Queue *Q); // 清除队列中全部元素，使队列恢复初始状态（Q->FRONT = Q->REAR = 0），但不释放空间
 void Print(Queue Q); // 打印队列元素
+int Q_length(Queue Q); // 返回Q队列的长度
 // 二叉树运算
 void Create_BT(BinaryTree *bt); // 创建二叉树bt
 BTNode *NewNode(ElemType x, BTNode *ln, BTNode *rn); // 创建一个新结点，该结点的值为x，ln和rn为该结点的左右孩子的结点
@@ -47,7 +51,7 @@ int Root(BinaryTree *bt, ElemType *x); // 若二叉树bt非空，则用x返回�
 void MakeTree(BinaryTree *bt, ElemType e, BinaryTree *left, BinaryTree *right); // 构造一棵二叉树bt，根结点值为x，以left和right为该根结点的左右子树
 void Visit(BinaryTree *bt); // 访问当前结点
 // 层次遍历
-void LevelOrderTree(BinaryTree *tree); // 层次遍历主函数
+int LevelOrderTree_leaf_num(BinaryTree *tree, int k); // 层次遍历主函数
 
 
 
@@ -67,7 +71,8 @@ int main()
     MakeTree(&y, 'D', &a, &b);
     MakeTree(&z, 'B', &y, &b);
     MakeTree(&y, 'A', &z, &x); 
-    LevelOrderTree(&y);
+    int num = LevelOrderTree_leaf_num(&y, 3);
+    printf("\ntree leaf num is %d\n", num);
     return 0;
 }
 
@@ -76,6 +81,7 @@ void Create_Q(Queue *Q, int mSize)
     Q->maxSize = mSize;
     Q->element = (BTNode *)malloc(mSize*sizeof(BTNode));
     Q->front = Q->rear = 0;
+    Q->length = 0;
 }
 void Destroy(Queue *Q)
 {
@@ -106,6 +112,7 @@ int EnQueue(Queue *Q, BTNode x)
     }
     Q->rear = (Q->rear+1) % Q->maxSize; // 入队front指针移动
     Q->element[Q->rear] = x;
+    Q->length++;
     return TRUE;
 }
 int DeQueue(Queue *Q)
@@ -114,6 +121,7 @@ int DeQueue(Queue *Q)
         return FALSE;
     }
     Q->front = (Q->front+1) % Q->maxSize; // 出队rear指针移动
+    Q->length--;
     return TRUE;
 }
 void Clear(Queue *Q)
@@ -165,25 +173,40 @@ void MakeTree(BinaryTree *bt, ElemType e, BinaryTree *left, BinaryTree *right)
 // {
 //     printf("%c, ", bt->root->element);
 // }
-void LevelOrderTree(BinaryTree *tree) // 修改enqueue 和 front
+int LevelOrderTree_leaf_num(BinaryTree *tree, int k) // 求k层的叶子结点个数
 {
     if (!tree->root) { // 若根结点不存在
-        return ;
+        return FALSE;
     }
     Queue Q; // Q是用于存储BTNode结点类型的队列
     Create_Q(&Q, QUEUESIZE); // 创建队列空间
     BTNode *p = tree->root; // 声明临时结点结构体指针p指向根结点
+    int level = 0; // 初始化高度为0
+    int count = 0; // 初始化层次为0
     EnQueue(&Q, *p); // 将根结点进队
     while (!IsEmpty(&Q)) { // 当链表不为空时
-        Front(&Q, p);
-        DeQueue(&Q);
-        printf("%c ", p->element); // 访问结点p
-        if (p->lChild) {
-            EnQueue(&Q, *p->lChild);
+        int n = Q.length;
+        level++;
+        for (int i=0; i<n; i++) {
+            Front(&Q, p);
+            DeQueue(&Q);
+            if (!(p->lChild) && !(p->rChild) && level==k) {
+                count++;
+            }
+            printf("%c ", p->element); // 访问结点p
+            if (p->lChild) {
+                EnQueue(&Q, *p->lChild);
+            }
+            if (p->rChild) {
+                EnQueue(&Q, *p->rChild);
+            }
         }
-        if (p->rChild) {
-            EnQueue(&Q, *p->rChild);
-        }
+        // level++; // 遍历完每层之后，高度加一
     }
     Destroy(&Q);
+    return count;
+}
+int Q_length(Queue Q)
+{
+    return Q.length;
 }
