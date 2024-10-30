@@ -31,7 +31,7 @@ int Search(BstNode* root, int data);             //使用递归查找已有值
 void Create(Stack *S, int mSize); // 创建一个能容纳mSize个单元的空堆栈
 int IsEmpty(Stack *S); // 判断堆栈是否为空，若为空返回TRUE，否则返回FALSE
 int IsFull(Stack *S); // 判断堆栈是否已满，若是，则返回TRUE，否则返回FALSE
-BstNode *Top(Stack *S); // 获取栈顶元素，通过x返回。返回栈顶元素
+BstNode *Top(Stack *S, BstNode *temp); // 获取栈顶元素，通过x返回。返回栈顶元素
 int Push(Stack *S, BstNode *x); // 在栈顶插入元素x（入栈）。若操作成功，则返回TRUE，否则返回FALSE
 int Pop(Stack *S); // 删除栈顶元素（出栈）。若操作成功，则返回TRUE，否则返回FALSE
 
@@ -116,13 +116,13 @@ int IsFull(Stack *S)
 {
     return S->top == S->maxSize - 1;
 }
-BstNode *Top(Stack *S) // 获取栈顶元素，通过x返回。返回栈顶元素
+BstNode *Top(Stack *S, BstNode *temp) // 获取栈顶元素，通过x返回。返回栈顶元素
 {
     // if (IsEmpty(S)) {
     //     return FALSE;
     // }
-    // *root = S->element[S->top];
-    return &(S->element[S->top]); // 返回指向栈顶元素的指针
+    *temp = S->element[S->top];
+    // return &(S->element[S->top]); // 返回指向栈顶元素的指针
 }
 int Push(Stack *S, BstNode *x) // 
 {
@@ -145,13 +145,14 @@ int BST_judge_v2(BstNode *root)
 {
     Stack *S = (Stack *)malloc(sizeof(Stack)); // 创建辅助数据结构栈（应用指针类型返回）
     Create(S, 10); // 初始化栈
+    BstNode *temp = (BstNode *)malloc(sizeof(BstNode)); // 创建临时变量保存
     while (!IsEmpty(S) || root != NULL) {
         while (root != NULL) {
             Push(S, root); // 找到第一个不为null的最左结点,进栈
             root = root->Lchild; // 寻找下一个左列
         }
 
-        root = Top(S); // 现在结点为中间结点
+        root = Top(S, temp); // 现在结点为中间结点
         Pop(S);
 
         if (root->data <= pre) { // 若前驱结点小于中间结点
