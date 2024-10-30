@@ -1,3 +1,5 @@
+// 使用递归查找二叉排序树中符合要求的key
+
 //二叉树创建，手动创建
 //使用二分查找法
 //二叉排序树
@@ -13,6 +15,8 @@ typedef struct BstNode {            //定义二叉搜索树结构
 }BstNode;
 
 // BstNode* rootPtr;    //定义根指针
+int flag; // 标志位
+int pre = 0; //初始化前驱结点值为0
 
 
 BstNode* GetNewNode(int data);                            //创建一个新结构体并返回
@@ -21,11 +25,14 @@ void Insert(BstNode** rootP, int data);                 //形式2：使用指针
 int Search(BstNode* root, int data);             //使用递归查找已有值
 
 void InOrder(BstNode *root); // 中序遍历二叉树
+void judge(BstNode *root); // 使用中序遍历方法判断是否为二叉排序树
+int judge_BST(BstNode *root);
+int find_key(BstNode *root, int key);
 
 int main()
 {
     BstNode* root = NULL;
-    Insert(&root, 5); // 为保证根结点存在，使用形式二返回根结点
+    Insert(&root, 5);            // 为保证根结点存在，使用形式二返回根结点
     Insert_Inner(root, 3); // 形式一插入
     Insert_Inner(root, 7);
     Insert_Inner(root, 1);
@@ -33,8 +40,9 @@ int main()
     Insert_Inner(root, 6);
     Insert_Inner(root, 8);
     Insert_Inner(root, 2);
-    InOrder(root);
-    Search(root, 20);
+    // InOrder(root);
+    find_key(root, 7);
+
     return 0;
     
 }
@@ -100,4 +108,15 @@ void InOrder(BstNode *root)
     InOrder(root->left);
     printf("%d ", root->data);
     InOrder(root->right);
+}
+int find_key(BstNode *root, int key)
+{
+    if (root->data == key) {
+        return key;
+    }
+    if (root->data >= key) {
+        find_key(root->left, key);
+    } else {
+        find_key(root->right, key);
+    }
 }
