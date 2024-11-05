@@ -47,7 +47,7 @@ int main()
 
 void BubbleSort(List *list)
 {
-    int i, j; // i标识每趟排序范围最后一个元素下标，每趟排序元素下标范围是0~i
+    int i, j; // i标识[每趟排序范围最后一个元素下标]，每趟排序元素下标范围是0~i
     for (i=list->n-1; i>0; i--) {
         BOOL isSwap = FALSE; // 标记一趟排序中是否发生元素交换
         for (j=0; j<i; j++) {

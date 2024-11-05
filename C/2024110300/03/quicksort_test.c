@@ -2,7 +2,9 @@
 // 平均情况下最快的内排序算法
 // 最好/平均时间复杂度O(nxlog2n)，最坏时间复杂度O(n²)
 // 最好/平均空间复杂度O(log2n)，最坏空间复杂度O(n)
-// 注：快速排序算法不一定稳定（不稳定）
+
+// 执行一次partition测试
+
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -33,16 +35,20 @@ int main()
     // 表10.4
     List *list = (List *)malloc(sizeof(List)); // 使用动态内存分配
     // 初始化结构体数据元素结构体数组，表10.2
-    list->D[0].key = 24;
-    list->D[1].key = 29;
-    list->D[2].key = 45;
-    list->D[3].key = 73;
-    list->D[4].key = 24; // 相同关键字
-    list->D[5].key = 89;
-    list->D[6].key = 90;
-    list->D[7].key = 11;
-    list->n = 8;
-    StartQuickSort(list);
+    list->D[0].key = 512;
+    list->D[1].key = 275;
+    list->D[2].key = 908;
+    list->D[3].key = 677;
+    list->D[4].key = 503; // 相同关键字
+    list->D[5].key = 765;
+    list->D[6].key = 612;
+    list->D[7].key = 897;
+    list->D[8].key = 512;
+    list->D[9].key = 154;
+    list->D[10].key = 170;
+    list->n = 11;
+    // StartQuickSort(list);
+    Partition(list, 0, 10);
     Print(*list);
     free(list);
     
