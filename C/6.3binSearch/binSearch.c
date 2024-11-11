@@ -39,6 +39,7 @@ int main()
     int high = 9;
     int ret = binSearch(L, 54, low, high);
     printf("m in element[m] is %d\n", ret);
+    free(L.element); // 释放分配空间
 
     return 0;
 }

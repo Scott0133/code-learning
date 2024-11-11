@@ -1,10 +1,6 @@
-// 拓扑排序
-// AOV网（顶点活动网）,AOV网为有向无环图
-// 以邻接表作为存储结构
-// 使用栈和顶点入度数组InDegree[]，顶点序号数组topo[]
-
-// 逆拓扑排序（bug）
-
+// 拓扑排序 和 逆拓扑排序
+    // 辅助数据结构：栈、出度数组OutDegree[],topo数组topo[]
+    // 修复bug：使用指针移动，避免结点权值无法递增
 #include<stdio.h>
 #include<stdlib.h>
 #define ERROR 0
@@ -16,6 +12,7 @@
 #define NotPresent 4
 #define Duplicate 5
 #define Connect 1
+#define MAXSIZE 100
 typedef int ElemType;
 // 结点和图
 typedef struct eNode {
@@ -26,7 +23,7 @@ typedef struct eNode {
 typedef struct Graph {
     int n; // 图的当前顶点数
     int e; // 图的当前边数
-    ENode **a; // 指向一维指针数组
+    ENode **a; // 指向动态生成的二维数组
 }LGraph;
 // 栈（链栈）
 typedef struct stack { // 堆栈结构体的定义
@@ -36,40 +33,32 @@ typedef struct stack { // 堆栈结构体的定义
 }Stack;
 
 int Init(LGraph *lg, int nSize); // 初始化邻接表
-void Destroy(LGraph *lg); // 邻接表撤销
 int Exist(LGraph *lg, int u, int v); // 查询边
 int Insert(LGraph *lg, int u, int v, ElemType w); // 插入边
 int Remove(LGraph *lg, int u, int v); // 删除边
 void Print(LGraph lg); // 打印邻接表链接情况
 
 void Create_stack(Stack *S, int mSize); // 创建一个能容纳mSize个单元的空堆栈
-void Destroy_stack(Stack *S); // 销毁一个已存在的堆栈，即释放堆栈占用的数组空间
 int IsEmpty(Stack *S); // 判断堆栈是否为空，若为空返回TRUE，否则返回FALSE
 int IsFull(Stack *S); // 判断堆栈是否已满，若是，则返回TRUE，否则返回FALSE
 int Top(Stack *S, ElemType *x); // 获取栈顶元素，通过x返回。返回栈顶元素
 int Push(Stack *S, ElemType x); // 在栈顶插入元素x（入栈）。若操作成功，则返回TRUE，否则返回FALSE
 int Pop(Stack *S); // 删除栈顶元素（出栈）。若操作成功，则返回TRUE，否则返回FALSE
-void Clear(Stack *S); // 清除堆栈中全部元素，但并不释放空间
-void Print_stack(Stack S); // 打印栈中元素
 
 void Degree(int *InDegree, LGraph *lg); // 求所有顶点入度，并存入数组InDegree[]
-// void ODegree(int *OutDegree, LGraph *lg); // 求所有顶点出度，并存入数组OutDegree[]
 int TopoSort(int *topo, LGraph *lg); // 拓扑排序，参数为：顶点序号数组、图指针
-// int Reverse_TopoSort(int *topo, LGraph *lg); // 逆拓扑排序
 void Inittopo(LGraph lg, int topo[]);
-// int ReverseTopoSort(int *topo, LGraph *lg); // copilot（bug）
 
-void test_Print_topo(int *topo, LGraph lg);
-void test_Print_indegree(LGraph lg, int *InDegree);
+int Reverse_TopoSort(int *topo, LGraph *lg, int outDegree[], int visited[]); // 逆拓扑排序
+void calculateOutDegrees(LGraph *lg, int outDegree[]); // 初始化出度数组
+int Reverse_TopoSort_copilot(int *topo, LGraph *lg, int outDegree[]);
 
 int main()
 {
-    // 邻接表，数组下标从0开始
+    // 图9.15 AOV网
     LGraph lg; // 声明图的结构体变量lg
     int *topo; // 声明topo数组，存储拓扑排序顶点
-    int *topo_reverse; // 声明逆topo数组
     topo = (int *)malloc(lg.n*sizeof(int)); // 创建topo[]
-    topo_reverse = (int *)malloc(lg.n*sizeof(int)); // 创建逆topo[]
     Init(&lg, 9); // 初始化邻接表
     Inittopo(lg, topo);
     Insert(&lg, 0, 7, Connect); Insert(&lg, 0, 2, Connect);
@@ -78,28 +67,15 @@ int main()
     Insert(&lg, 3, 6, Connect); Insert(&lg, 3, 5, Connect);
     Insert(&lg, 4, 5, Connect); Insert(&lg, 4, 3, Connect);
     Insert(&lg, 7, 8, Connect); Insert(&lg, 8, 6, Connect);
-    
-    Print(lg);
 
-    printf("\n");
-    TopoSort(topo, &lg);
-
-    // ReverseTopoSort(topo, &lg);
-
-    // printf("\n");
-    // test_Print_topo(topo, lg);
-
-    // printf("\n");
-    // Reverse_TopoSort(topo_reverse, &lg);
-
-    // // test打印出度
-    // int *OutDegree = (int *)malloc(lg.n*sizeof(int));
-    // ODegree(OutDegree, &lg);
-    // test_Print_indegree(lg, OutDegree);
-    
+    // test
+    int outDegree[MAXSIZE];
+    calculateOutDegrees(&lg, outDegree); // 求各顶点出度并存入数组
+    Reverse_TopoSort_copilot(topo, &lg, outDegree);
 
     return 0;
 }
+
 int Init(LGraph *lg, int nSize)
 {
     lg->n = nSize; // 初始化图顶点个数
@@ -113,20 +89,6 @@ int Init(LGraph *lg, int nSize)
         }
     }
     return OK;
-}
-void Destroy(LGraph *lg)
-{
-    ENode *p, *q; // 声明临时结构体指针p，q
-    for (int i=0; i<lg->n; i++) { // 释放所有非空结点的内存
-        p = lg->a[i]; // 指针p指向顶点i的单链表的第一个结点
-        q = p; // 将q指向p
-        while (p) { // 若p不为空
-            p = p->nextArc; // p指向下一结点
-            free(q); // 释放q结点
-            q = p; // q指向p
-        }
-    }
-    free(lg->a); // 释放一维结构体指针数组a的存储空间
 }
 int Exist(LGraph *lg, int u, int v)
 {
@@ -153,7 +115,7 @@ int Insert(LGraph *lg, int u, int v, ElemType w)
         return Duplicate;
     }
     p = (ENode *)malloc(sizeof(ENode)); // 为新的边结点分配存储空间
-    p->w = w; // 为新结点写入权值
+    p->w = w; // 为新结点写入权值（修改此处的connect）
     // 头插法
     p->adjVex = v;
     p->nextArc = lg->a[u]; // 将新的边结点插入单链表的最前端
@@ -214,13 +176,6 @@ void Create_stack(Stack *S, int mSize)
     S->element = (ElemType *)malloc(mSize*sizeof(ElemType));
     S->top = -1;
 }
-
-void Destroy_stack(Stack *S)
-{
-    S->maxSize = 0;
-    free(S->element);
-    S->top = -1;
-}
 int IsEmpty(Stack *S)
 {
     return S->top == -1;
@@ -254,18 +209,6 @@ int Pop(Stack *S)
     S->top--;
     return TRUE;
 }
-void Clear(Stack *S)
-{
-    S->top = -1;
-}
-void Print_stack(Stack S)
-{
-    while (S.top != -1) {
-        printf("%d\n", S.element[S.top]);
-        S.top--;
-    }
-}
-
 void Degree(int *InDegree, LGraph *lg) // 计算顶点入度
 {
     ENode *p; // 临时结构体指针p
@@ -275,23 +218,6 @@ void Degree(int *InDegree, LGraph *lg) // 计算顶点入度
     for (int i=0; i<lg->n; i++) { // 计算入度
         for (p=lg->a[i]; p; p=p->nextArc) { // 检查以顶点i为尾的所有邻接点
             InDegree[p->adjVex]++; // !!
-        }
-    }
-}
-void ODegree(int *OutDegree, LGraph *lg)
-{
-    ENode *p; // 临时结构体指针p
-    for (int i=0; i<lg->n; i++) {
-        OutDegree[i] = 0; // 初始化OutDegree[]数组
-    }
-    // for (int i=0; i<lg->n; i++) {
-    //     for (p=lg->a[i]; p; p=p->nextArc) { // 检查以顶点i为尾的所有邻接点
-    //         OutDegree[p->adjVex]++;
-    //     }
-    // }   
-    for (int i=0; i<lg->n; i++) {
-        for (p=lg->a[i]; p!=NULL; p=p->nextArc) {
-            OutDegree[i]++;
         }
     }
 }
@@ -305,14 +231,10 @@ int TopoSort(int *topo, LGraph *lg)
     Create_stack(&S, lg->n); // 创建大小为n的栈
     Degree(InDegree, lg); // 计算顶点的入度
     for (i=0; i<lg->n; i++) {
-        if (!InDegree[i]) {
+        if (!InDegree[i]) { // 若顶点的入度为0，则入栈
             Push(&S, i);
         }
     }
-    // // test 
-    // printf("InDegree[]:");
-    // test_Print_indegree(*lg, InDegree);
-    // printf("\n");
     for (i=0; i<lg->n; i++) {
         if (IsEmpty(&S)) {
             return ERROR; // 若堆栈为空，说明有回路，返回ERROR
@@ -330,10 +252,6 @@ int TopoSort(int *topo, LGraph *lg)
             }
         }
     }
-    // // test
-    // printf("\n");
-    // printf("InDegree[]:");
-    // test_Print_indegree(*lg, InDegree);
 }
 void Inittopo(LGraph lg, int topo[])
 {
@@ -341,101 +259,88 @@ void Inittopo(LGraph lg, int topo[])
         topo[i] = 0;
     }
 }
-void test_Print_topo(int *topo, LGraph lg)
+void calculateOutDegrees(LGraph *lg, int outDegree[])
 {
-    for (int i=0; i<lg.n; i++) {
-        printf("%d ", topo[i]);
+    for (int i = 0; i < lg->n; i++) {
+        ENode *current = lg->a[i];  // 使用current指针移动，避免结点权值无法递增
+        outDegree[i] = 0; // 初始化出度为0
+        while (current != NULL) {
+            outDegree[i]++;
+            current = current->nextArc;
+        }
     }
 }
-void test_Print_indegree(LGraph lg, int *InDegree)
+int Reverse_TopoSort(int *topo, LGraph *lg, int outDegree[], int visited[])
 {
-    for (int i=0; i<lg.n; i++) {
-        printf("%d ", InDegree[i]);
-    }
-}
-int Reverse_TopoSort(int *topo_reverse, LGraph *lg) // bug
-{
-    // int temp[9]; // 临时数组
-
     int i,j,k; // 创建临时变量i、j、k
+
     ENode *p; // 创建临时结构体指针p
     Stack S; // 创建栈S
-    int *OutDegree = (int *)malloc(lg->n*sizeof(int)); // 为OutDegree数组创建空间
+    int *InDegree = (int *)malloc(lg->n*sizeof(int)); // 为InDegree数组创建空间
     
     Create_stack(&S, lg->n); // 创建大小为n的栈
-    ODegree(OutDegree, lg); // 计算顶点的出度
+    // Degree(InDegree, lg); // 计算顶点的入度 （出度已计算）
     for (i=0; i<lg->n; i++) {
-        if (!OutDegree[i]) { // 若没有出度，则进栈
+        if (!outDegree[i]) { // 若顶点的出度为0，则入栈
+            Push(&S, i);
+            visited[i] = TRUE;
+        }
+    }
+    for (i=0; i<lg->n; i++) {
+        if (IsEmpty(&S)) {
+            return ERROR; // 若堆栈为空，说明有回路，返回ERROR
+        } else {
+            Top(&S, &j); // 返回栈顶元素，通过j返回
+            Pop(&S); //  元素j出栈
+            topo[i] = j; // 将j存入顶点序号数组
+            printf("%d ", j);
+            for (int num=0; num<lg->n; num++) { // 检查以顶点j为尾的所有邻接点（修改）
+            ENode *current = lg->a[num];  // 使用current指针移动，避免结点权值无法递增
+                if (outDegree[num] == 0 && visited[num] == FALSE) { // 若顶点num的出度为0，则进栈
+                    Push(&S, num);
+                    visited[num] = TRUE;
+                }
+                if (current == NULL) {
+                    outDegree[num]--;
+                }
+            }
+        }
+    }
+}
+int Reverse_TopoSort_copilot(int *topo, LGraph *lg, int outDegree[]) {
+    int i, j, k; // 临时变量i、j、k
+    ENode *p; // 临时结构体指针p
+    Stack S; // 栈S
+    Create_stack(&S, lg->n); // 创建大小为n的栈
+    // 找到所有出度为0的顶点并入栈
+    for (i = 0; i < lg->n; i++) {
+        if (outDegree[i] == 0) {
             Push(&S, i);
         }
     }
-    // for (i=0; i<lg->n; i++) {
-    //     if (IsEmpty(&S)) {
-    //         return ERROR; // 若堆栈为空，说明有回路，返回ERROR
-    //     } else {
-    //         Top(&S, &j); // 返回栈顶元素，通过j返回
-    //         Pop(&S); //  元素j出栈
-    //         topo_reverse[i] = j; // 将j存入顶点序号数组
-    //         printf("%d ", j);
-    //         for (p=lg->a[j]; p; p=p->nextArc) { // 检查以顶点j为尾的所有邻接点
-    //             k = p->adjVex; // k指向p的邻接点
-    //             OutDegree[k]--; // 顶点k的入度减1
-    //             if (!OutDegree[k]) { // 若顶点k的 出 度为0，则进栈
-    //                 Push(&S, k);
-    //             }
-    //         }
-    //     }
-    // }
-    for (i=0; i<lg->n; i++) {
-        Top(&S, &j);
-        Pop(&S); // 出栈
-        topo_reverse[i] = j; // 将j存入顶点序号数组
-        printf("%d ", j); // 打印出栈元素
-        for (int n=0; n<lg->n; n++) { // 遍历所有顶点，若找到有链接出度为0的点，则该顶点出度-1
-            p = lg->a[n];
-            if (p == NULL) continue;
-            k = p->adjVex;
-            if (topo_reverse[j] == k) {
-                OutDegree[k]--;
-            }
-            if (!OutDegree[k]) { // 若顶点出度为0，则进栈
-                Push(&S, k);
+    for (i = 0; i < lg->n; i++) {
+        if (IsEmpty(&S)) {
+            return ERROR; // 如果栈为空，说明图有回路
+        } else {
+            Top(&S, &j); // 返回栈顶元素，通过j返回
+            Pop(&S); // 元素j出栈
+            topo[i] = j; // 将j存入拓扑排序数组
+            printf("%d ", j);
+
+            // 检查所有顶点，将邻接顶点为j的顶点出度减1
+            for (k = 0; k < lg->n; k++) {
+                for (p = lg->a[k]; p; p = p->nextArc) {
+                    if (p->adjVex == j) {
+                        outDegree[k]--; // 顶点k的出度减1
+                        if (outDegree[k] == 0) {
+                            Push(&S, k); // 如果顶点k的出度为0，则进栈
+                        }
+                    }
+                }
             }
         }
     }
+
+    return TRUE;
 }
 
-int ReverseTopoSort(int *topo, LGraph *lg) // copilot bug
-{
-    int i, j, k; // 创建临时变量i、j、k
-    ENode *p; // 创建临时结构体指针p
-    Stack S; // 创建栈S
-    int *OutDegree = (int *)malloc(lg->n * sizeof(int)); // 为OutDegree数组创建空间
-    
-    Create_stack(&S, lg->n); // 创建大小为n的栈
-    ODegree(OutDegree, lg); // 计算顶点的出度
-    for (i = 0; i < lg->n; i++) {
-        if (!OutDegree[i]) {
-            Push(&S, i);
-        }
-    }
-    int index = 0; // 用于记录拓扑排序的索引
-    while (!IsEmpty(&S)) {
-        Top(&S, &j); // 返回栈顶元素，通过j返回
-        Pop(&S); // 元素j出栈
-        topo[index++] = j; // 将j存入顶点序号数组
-        printf("%d ", j);
-        for (p = lg->a[j]; p; p = p->nextArc) { // 检查以顶点j为尾的所有邻接点
-            k = p->adjVex; // k指向p的邻接点
-            OutDegree[k]--; // 顶点k的出度减1
-            if (!OutDegree[k]) { // 若顶点k的出度为0，则进栈
-                Push(&S, k);
-            }
-        }
-    }
-    if (index != lg->n) {
-        return ERROR; // 若未处理完所有顶点，说明有回路，返回ERROR
-    }
-    free(OutDegree); // 释放OutDegree数组的空间
-    return OK; // 返回成功
-}

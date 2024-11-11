@@ -35,20 +35,19 @@ int main()
     // 表10.4
     List *list = (List *)malloc(sizeof(List)); // 使用动态内存分配
     // 初始化结构体数据元素结构体数组，表10.2
-    list->D[0].key = 512;
-    list->D[1].key = 275;
-    list->D[2].key = 908;
-    list->D[3].key = 677;
-    list->D[4].key = 503; // 相同关键字
-    list->D[5].key = 765;
-    list->D[6].key = 612;
-    list->D[7].key = 897;
-    list->D[8].key = 512;
-    list->D[9].key = 154;
-    list->D[10].key = 170;
-    list->n = 11;
+    list->D[0].key = 25;
+    list->D[1].key = 84;
+    list->D[2].key = 21;
+    list->D[3].key = 47;
+    list->D[4].key = 15; // 相同关键字
+    list->D[5].key = 27;
+    list->D[6].key = 68;
+    list->D[7].key = 35;
+    list->D[8].key = 20;
+
+    list->n = 9;
     // StartQuickSort(list);
-    Partition(list, 0, 10);
+    Partition(list, 0, 8);
     Print(*list);
     free(list);
     

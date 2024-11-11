@@ -73,7 +73,7 @@ int main()
     // 例图（数组下标为1开始）
     LGraph lg_2; // 创建例图
     Init_lg_2(&lg_2, 8);
-    Insert_lg_2(&lg_2, 1, 5, Connect); Insert_lg_2(&lg_2, 1, 2, Connect);
+    Insert_lg_2(&lg_2, 1, 5, Connect); Insert_lg_2(&lg_2, 1, 2, Connect); 
     Insert_lg_2(&lg_2, 2, 6, Connect); Insert_lg_2(&lg_2, 2, 1, Connect);
     Insert_lg_2(&lg_2, 3, 7, Connect); Insert_lg_2(&lg_2, 3, 6, Connect); Insert_lg_2(&lg_2, 3, 4, Connect);
     Insert_lg_2(&lg_2, 4, 8, Connect); Insert_lg_2(&lg_2, 4, 7, Connect); Insert_lg_2(&lg_2, 4, 3, Connect);
@@ -84,11 +84,12 @@ int main()
     
     
 
-    // G
+    // p163 9.14例图
     // Print_lg(lg);
     // printf("\n");
     // BFSGraph(lg, 1);
-    // 例图
+
+    // p163 增加例图
     printf("\n");
     Print_lg_2(lg_2);
     printf("\n");
