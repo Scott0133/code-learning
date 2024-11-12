@@ -12,11 +12,15 @@ typedef int ElemType;
 void AdjustDown(ElemType heap[], int current, int border);
 void CreateHeap(ElemType heap[], int n);
 void Visit(ElemType heap[], int p);
+void PrintArr(int testarr[], int size);
 
 int main()
 {
-    int testarr[] = {61, 28, 81, 43, 36, 47, 83, 5}; // 测试数组
-    CreateHeap(testarr, 8);
+    int testarr[] = {80, 10, 70, 20, 60, 30, 50, 40}; // 测试数组
+    int size = sizeof(testarr) / sizeof(testarr[0]);
+    CreateHeap(testarr, size);
+    
+    PrintArr(testarr, size);
 
     return 0;
 }
@@ -52,4 +56,10 @@ void CreateHeap(ElemType heap[], int n)
 void Visit(ElemType heap[], int p)
 {
     printf("visited %d\n", heap[p]);
+}
+void PrintArr(int testarr[], int size)
+{
+    for (int i=0; i<size; i++) {
+        printf("%d ", testarr[i]);
+    }
 }
