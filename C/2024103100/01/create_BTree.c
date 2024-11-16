@@ -18,8 +18,8 @@ void InOrder(BstNode *root);
 
 int main()
 {
-    int Pre[] = {1, 2, 4, 5, 3, 6, 7}; // 前序遍历数组
-    int In[] = {4, 2, 5, 1, 6, 3, 7}; // 中序遍历数组
+    int Pre[] = {1, 2, 3, 4, 5, 6, 7, 8}; // 前序遍历数组
+    int In[] = {3, 2, 4, 1, 6, 5, 7, 8}; // 中序遍历数组
     int size = sizeof(Pre) / sizeof(Pre[0]);
     BstNode *temproot;
     temproot = CreateTree_v2(Pre, In, 0, size-1, 0, size-1);

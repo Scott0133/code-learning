@@ -15,6 +15,7 @@
 typedef int ElemType;
 typedef int KeyType; // 定义排序关键字为整型
 typedef char DataType; // data数据为char类型
+
 typedef struct entry { // 数据元素结构体
     KeyType key; // 排序关键字，KeyType应为可比较类型
     DataType data; // data包含数据元素中其他数据项（暂不使用）
@@ -57,7 +58,7 @@ int main()
     HeapSort(hp);
     Print_arr(hp);
 
-    
+    free(hp);
     return 0;
 }
 

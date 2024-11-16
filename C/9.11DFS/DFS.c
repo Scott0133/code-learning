@@ -47,12 +47,26 @@ int main()
     Insert(&lg, 5, 3, Connect);
     Insert(&lg, 5, 1, Connect);
 
-    Print(lg); // 顶点链接情况
-    printf("\n");
-    DFSGraph(lg, 2); // 从顶点2开始深度优先遍历图
-    printf("\n");
-    DFSGraph(lg, 5); // 从顶点4开始深度优先遍历图
-    // printf("%d %d %d %d", lg.a[1]->w, lg.a[1]->nextArc->w, lg.a[2]->w, lg.a[3]->w);
+    // test
+    LGraph lg2;
+    Init(&lg2, 5);
+    Insert(&lg2, 0, 3, Connect);
+    Insert(&lg2, 0, 1, Connect);
+    Insert(&lg2, 0, 2, Connect);
+    Insert(&lg2, 2, 4, Connect);
+    Insert(&lg2, 2, 3, Connect);
+    Insert(&lg2, 4, 3, Connect);
+    Insert(&lg2, 4, 1, Connect);
+
+    // Print(lg); // 顶点链接情况
+    // printf("\n");
+    // DFSGraph(lg, 2); // 从顶点2开始深度优先遍历图
+    // printf("\n");
+    // DFSGraph(lg, 5); // 从顶点4开始深度优先遍历图
+    // // printf("%d %d %d %d", lg.a[1]->w, lg.a[1]->nextArc->w, lg.a[2]->w, lg.a[3]->w);
+
+    Print(lg2);
+    DFSGraph(lg2, 0);
 
     return 0;
 }
@@ -166,7 +180,7 @@ void DFS(int v, int visited[], LGraph lg) // 从顶点v开始，深度优先遍�
     printf("%d ", v); // 访问顶点v
     visited[v] = 1; // 将v设置为已访问
     for (w=lg.a[v]; w; w=w->nextArc) { // 遍历v的邻接点
-        if (!visited[w->adjVex]) { // 若w为被访问，则递归调用DFS
+        if (!visited[w->adjVex]) { // 若w未被访问，则递归调用DFS
             DFS(w->adjVex, visited, lg);
         }
     }

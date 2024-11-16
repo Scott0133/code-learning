@@ -57,8 +57,8 @@ void PrintPreOrder(BstNode *node) {
 }
 
 int main() {
-    int Pre[] = {1, 2, 4, 5, 3, 6, 7};
-    int In[] = {4, 2, 5, 1, 6, 3, 7};
+    int Pre[] = {1, 2, 3, 4, 5, 6, 7, 8};
+    int In[] = {3, 2, 4, 1, 5, 7, 8, 6};
     int n = sizeof(Pre) / sizeof(Pre[0]);
 
     BstNode *root = CreateTree(Pre, In, 0, n - 1, 0, n - 1);
