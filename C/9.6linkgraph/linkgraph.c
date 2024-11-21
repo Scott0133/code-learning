@@ -25,7 +25,7 @@ int Init(LGraph *lg, int nSize); // 初始化邻接表
 void Destroy(LGraph *lg); // 邻接表撤销
 int Exist(LGraph *lg, int u, int v); // 查询边
 int Insert(LGraph *lg, int u, int v, ElemType w); // 插入边
-int Remove(LGraph *lg, int u, int v); // 删除边
+int Remove(LGraph *lg, int u, int v); // 删除边u->v
 void Print(LGraph lg); // 仅打印权值
 
 int main()
@@ -114,7 +114,7 @@ int Remove(LGraph *lg, int u, int v)
         return ERROR;
     }
     p = lg->a[u], q = NULL; // p指向顶点u单链表的第一个结点，q为空
-    while (p && p->adjVex != v) { // 指针p指向的结点存在与p指向的边结点值不为v
+    while (p && p->adjVex != v) { // 指针p指向的结点存在与 p 的邻接点不是v
         q = p; // q指向p
         p = p->nextArc; // p指向下一个结点
     }
@@ -122,11 +122,11 @@ int Remove(LGraph *lg, int u, int v)
         return NotPresent;
     }
     if (q) { // 若q存在
-        q->nextArc = p->nextArc; // 从单链表删除此边
+        q->nextArc = p->nextArc; // 修改q的next指针
     } else {
         lg->a[u] = p->nextArc; // 确保删除第一个结点时链表头指针正确更新!
     }
-    free(p);
+    free(p); // 删除节点q
     lg->e--; // 边的数量减1
     return OK;
 }

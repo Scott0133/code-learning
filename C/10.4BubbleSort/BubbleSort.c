@@ -48,7 +48,7 @@ int main()
 void BubbleSort(List *list)
 {
     int i, j; // i标识[每趟排序范围最后一个元素下标]，每趟排序元素下标范围是0~i
-    for (i=list->n-1; i>0; i--) {
+    for (i=list->n-1; i>0; i--) { // 每趟排序数组从后往前有序
         BOOL isSwap = FALSE; // 标记一趟排序中是否发生元素交换
         for (j=0; j<i; j++) {
             if (list->D[j].key > list->D[j+1].key) { //相邻元素关键字若为逆序
