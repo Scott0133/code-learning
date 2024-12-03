@@ -31,7 +31,7 @@ LGraph* ReverseAdjList(LGraph* lg) {
         reversedLg->vertices[i].firstArc = NULL;
     }
 
-    for (int i = 0; i < lg->n; i++) {
+    for (int i = 0; i < lg->n; i++) { // 遍历图的所有边，将所有边反转
         ENode* p = lg->vertices[i].firstArc;
         while (p) {
             InsertEdge(reversedLg, p->adjVex, i);
